@@ -3,7 +3,7 @@ from flask import Flask, jsonify, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_cors import CORS
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send,join_room,emit
 
 from models import db, Bird
 
@@ -35,7 +35,8 @@ api.add_resource(Birds, '/birds')
 @socketio.on('message')
 def handle_message(msg):
     print('Message received:', msg)
-    send(msg, broadcast=True)
+    # send(msg, broadcast=True)
+    emit('this is a msg emited from the server')
 
 @socketio.on('connect')
 def handle_connect():
@@ -44,6 +45,11 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
+
+
+
+
+
 
 
 
