@@ -35,8 +35,7 @@ api.add_resource(Birds, '/birds')
 @socketio.on('message')
 def handle_message(msg):
     print('Message received:', msg)
-    # send(msg, broadcast=True)
-    emit('this is a msg emited from the server')
+    send(msg, broadcast=True)
 
 @socketio.on('connect')
 def handle_connect():
