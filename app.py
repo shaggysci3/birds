@@ -16,7 +16,7 @@ app.json.compact = False
 CORS(app)
 
 # Initialize SocketIO
-socketio = SocketIO(app, cors_allowed_origins=["*","http://127.0.0.1:5173/cart","https://kayle-s-antiques.onrender.com/cart"])
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 migrate = Migrate(app, db)
 db.init_app(app)
