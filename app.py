@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import db, Bird,Products
+from models import db, Bird,Products,Workouts
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
@@ -70,6 +70,46 @@ class AllProducts(Resource):
             return make_response(rb, 400)
 
 api.add_resource(AllProducts, '/products')
+
+class AllWorkouts(Resource):
+
+    def get(self):
+        response_body = [workout.to_dict() for workout in Workouts.query.all()]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            img = request.json.get('img')
+            name = request.json.get('name')
+            timer = request.json.get('timer')
+            
+
+            if not all([img,name,timer]):
+                raise ValueError("Missing required fields")
+
+            new_w = Workouts(
+                
+                img=img,
+                name=name,
+                timer=timer,
+                
+            )
+            db.session.add(new_w)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_w.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(AllWorkouts, '/workouts')
 
 if __name__ == '__main__':
     app.run()

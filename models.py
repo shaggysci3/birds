@@ -24,3 +24,14 @@ class Products(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Products {self.name} | {self.id}>'
+
+class Workouts(db.Model, SerializerMixin):
+    __tablename__ = 'workouts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    img = db.Column(db.String)
+    name = db.Column(db.String)
+    timer = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f'<Products {self.name} | {self.id}>'
