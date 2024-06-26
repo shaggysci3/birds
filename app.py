@@ -111,5 +111,37 @@ class AllWorkouts(Resource):
 
 api.add_resource(AllWorkouts, '/workouts')
 
+class WorkoutById(Resource):
+    def get(self,id):
+
+        workout = Workouts.query.filter(Workouts.id == id).first()
+
+        if workout:
+            response_body = workout.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    def delete(self, id ):
+        workout = Workouts.query.filter(Workouts.id == id).first()
+
+        if workout:
+            db.session.delete(workout)
+            db.session.commit()
+            response_body = {}
+            return make_response(response_body, 204)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    
+
+api.add_resource(WorkoutById,'/avatars/<int:id>')
+
 if __name__ == '__main__':
     app.run()
