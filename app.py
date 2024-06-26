@@ -141,7 +141,7 @@ class WorkoutById(Resource):
     
     
 
-api.add_resource(WorkoutById,'/avatars/<int:id>')
+api.add_resource(WorkoutById,'/workouts/<int:id>')
 
 if __name__ == '__main__':
     app.run()
