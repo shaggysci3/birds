@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User
+from models import Bird,Products,Workouts,User,Show
 
 from config import app,db
 
@@ -154,10 +154,10 @@ api.add_resource(Birds, '/birds')
 
 
 
-class AllProducts(Resource):
+class AllShows(Resource):
 
     def get(self):
-        response_body = [product.to_dict() for product in Products.query.all()]
+        response_body = [show.to_dict() for show in Show.query.all()]
         return make_response(response_body,200)
     def post(self):
         try:
@@ -166,24 +166,26 @@ class AllProducts(Resource):
             # id = request.json.get('id')
             img = request.json.get('img')
             name = request.json.get('name')
-            price = request.json.get('price')
-            info = request.json.get('info')
+            date = request.json.get('date')
+            time = request.json.get('time')
+            location = request.json.get('location')
 
-            if not all([img,name,price , info]):
+            if not all([img ,name,date , time, location]):
                 raise ValueError("Missing required fields")
 
-            new_p = Products(
+            new_s = Show(
                 
                 img=img,
                 name=name,
-                price=price,
-                info=info,
+                date=date,
+                time=time,
+                location=location,
             )
-            db.session.add(new_p)
+            db.session.add(new_s)
             db.session.commit()
 
             # Assuming to_dict() method is defined in your Mission model
-            rb = new_p.to_dict(rules = ())
+            rb = new_s.to_dict(rules = ())
             return make_response(rb, 201)
 
         except ValueError:
@@ -192,7 +194,76 @@ class AllProducts(Resource):
                 }
             return make_response(rb, 400)
 
-api.add_resource(AllProducts, '/products')
+api.add_resource(AllShows, '/shows')
+
+class ShowById(Resource):
+    def get(self,id):
+
+        show = Show.query.filter(Show.id == id).first()
+
+        if show:
+            response_body = show.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    def delete(self, id ):
+        show = Show.query.filter(Show.id == id).first()
+
+        if show:
+            db.session.delete(show)
+            db.session.commit()
+            response_body = {}
+            return make_response(response_body, 204)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    def patch(self, id):
+        show = Show.query.filter(Show.id == id).first()
+
+        if show:
+            try:
+                # Get the data from the PATCH request
+                data = request.json
+
+                # Update user attributes if present in the request
+                if 'username' in data:
+                    show.img = data['img']
+                if 'name' in data:
+                    show.name = data['name']
+                if 'password' in data:
+                    show.date = data['date']
+                if 'username' in data:
+                    show.time = data['time']
+                if 'username' in data:
+                    show.location = data['location']
+
+                # Commit changes to the database
+                db.session.commit()
+
+                # Return the updated user
+                response_body = show.to_dict(rules=())
+                return make_response(response_body, 200)
+
+            except ValueError:
+                response_body = {
+                    "error": "Invalid data in the request"
+                }
+                return make_response(response_body, 400)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body, 404)
+
+api.add_resource(ShowById,'/shows/<int:id>')
+
 
 class AllWorkouts(Resource):
 

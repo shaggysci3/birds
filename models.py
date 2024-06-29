@@ -98,3 +98,21 @@ class Workouts(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Workouts {self.name} | {self.id}>'
     
+class Show(db.Model, SerializerMixin):
+    __tablename__ = 'shows'
+
+    id = db.Column(db.Integer, primary_key=True)
+    img = db.Column(db.String)
+    name = db.Column(db.String)
+    date = db.Column(db.String)
+    time = db.Column(db.Integer)
+    location = db.Column(db.String)
+
+    # Relationship mapping the workouts to related users
+    
+     # Setialization rules for users
+    
+
+    def __repr__(self):
+        return f'<Show {self.name} | {self.id}>'
+    
