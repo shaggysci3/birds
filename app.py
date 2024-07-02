@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User,Show
+from models import Bird,Products,Workouts,User,Show,user_workouts
 
 from config import app,db
 
@@ -343,8 +343,9 @@ api.add_resource(WorkoutById,'/workouts/<int:id>')
 class UserWorkout(Resource):
     def get(self,u_id,w_id):
         
-        response_body = [user.to_dict(rules=()) for user in User.query.all()]
+        response_body = [uw.to_dict(rules=()) for uw in user_workouts.query.all()]
         return make_response(response_body,200)
+    
     def post(self,u_id,w_id):
         try:
             user = User.query.filter(User.id == u_id).first()
@@ -360,14 +361,29 @@ class UserWorkout(Resource):
             db.session.commit()
 
             # Assuming to_dict() method is defined in your Mission model
-            rb = [workout.to_dict(rules=('-users', 'user_workouts')) for workout in user.workouts]
-            return make_response(rb, 201)
+            workouts = Workouts.query.all()
+
+            response_body = [workout.to_dict(rules=('-users.workouts', '-user_workouts')) for workout in workouts]
+            return make_response(response_body, 201)
 
         except ValueError:
             rb = {
                 "errors": ["validation errors"]
                 }
             return make_response(rb, 400)
+    def delete(self, u_id, w_id):
+        user = User.query.filter(User.id == u_id).first()
+        workout = Workouts.query.filter(Workouts.id == w_id).first()
+
+        if user and workout:
+            if workout in user.workouts:
+                user.workouts.remove(workout)
+                db.session.commit()
+                return make_response({}, 204)
+            else:
+                return make_response({"error": "Workout not associated with user"}, 404)
+        else:
+            return make_response({"error": "User or Workout not found"}, 404)
 
 api.add_resource(UserWorkout,'/users/<int:u_id>/<int:w_id>')
 
