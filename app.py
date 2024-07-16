@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User,Show,user_workouts
+from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings
 
 from config import app,db
 
@@ -427,6 +427,45 @@ class AllProducts(Resource):
             return make_response(rb, 400)
 
 api.add_resource(AllProducts, '/products')
+
+class AllRatings(Resource):
+
+    def get(self):
+        response_body = [rating.to_dict() for rating in Ratings.query.all()]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            rating = request.json.get('rating')
+            product_id = request.json.get('product_id')
+            
+            
+
+            if not all([rating,product_id]):
+                raise ValueError("Missing required fields")
+
+            new_r = Ratings(
+                
+                rating=rating,
+                product_id=product_id,
+            )
+            db.session.add(new_r)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_r.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(AllRatings, '/ratings')
+
 
 
 

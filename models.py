@@ -75,9 +75,30 @@ class Products(db.Model, SerializerMixin):
     name = db.Column(db.String)
     price = db.Column(db.Integer)
     info = db.Column(db.String)
+    # relationships
+    ratings = db.relationship('Ratings', back_populates = 'products', cascade= 'all, delete-orphan')
+
+     # Serialization rules
+    serialize_rules = ('-ratings.products',)
 
     def __repr__(self):
         return f'<Products {self.name} | {self.id}>'
+    
+class Ratings(db.Model, SerializerMixin):
+    __tablename__ = 'ratings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    # relationships
+    products = db.relationship('Products', back_populates = 'ratings')
+
+      # Serialization rules
+    serialize_rules = ('-products.ratings',)
+
+    def __repr__(self):
+        return f'<Ratings {self.name} | {self.id}>'
+    
     
 
 
