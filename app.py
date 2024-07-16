@@ -387,6 +387,48 @@ class UserWorkout(Resource):
 
 api.add_resource(UserWorkout,'/users/<int:u_id>/<int:w_id>')
 
+class AllProducts(Resource):
+
+    def get(self):
+        response_body = [product.to_dict() for product in Products.query.all()]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            img = request.json.get('img')
+            name = request.json.get('name')
+            price = request.json.get('price')
+            info = request.json.get('info')
+            
+
+            if not all([img ,name,price , info]):
+                raise ValueError("Missing required fields")
+
+            new_p = Products(
+                
+                img=img,
+                name=name,
+                price=price,
+                info=info,
+            )
+            db.session.add(new_p)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_p.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(AllProducts, '/products')
+
+
 
 if __name__ == '__main__':
     app.run()
