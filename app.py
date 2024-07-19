@@ -348,8 +348,11 @@ class UserWorkout(Resource):
     
     def post(self,u_id,w_id):
         try:
-            user = User.query.filter(User.id == u_id).first()
-            workout = Workouts.query.filter(Workouts.id == w_id).first()
+            userId = request.json.get('userId')
+            workoutId = request.json.get('workoutId')
+
+            user = User.query.filter(User.id == userId).first()
+            workout = Workouts.query.filter(Workouts.id == workoutId).first()
             
 
             if not all([user, workout]):

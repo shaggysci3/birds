@@ -137,3 +137,17 @@ class Show(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Show {self.name} | {self.id}>'
     
+class Description(db.Model, SerializerMixin):
+    __tablename__ = 'description'
+
+    id = db.Column(db.Integer, primary_key=True)
+    description=db.Column(db.String)
+
+    # Relationship mapping the workouts to related users
+    
+     # Setialization rules for users
+    
+
+    def __repr__(self):
+        return f'<Description {self.name} | {self.id}>'
+    
