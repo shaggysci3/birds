@@ -166,7 +166,7 @@ class About(db.Model, SerializerMixin):
         return f'<About {self.name} | {self.id}>'
     
 class VideoID(db.Model, SerializerMixin):
-    __tablename__ = 'videoId'
+    __tablename__ = 'videoid'
 
     id = db.Column(db.Integer, primary_key=True)
     videoId=db.Column(db.String)
