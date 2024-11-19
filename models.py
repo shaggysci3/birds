@@ -151,3 +151,17 @@ class Description(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Description {self.name} | {self.id}>'
     
+class About(db.Model, SerializerMixin):
+    __tablename__ = 'about'
+
+    id = db.Column(db.Integer, primary_key=True)
+    about=db.Column(db.String)
+
+    # Relationship mapping the workouts to related users
+    
+     # Setialization rules for users
+    
+
+    def __repr__(self):
+        return f'<About {self.name} | {self.id}>'
+    
