@@ -610,6 +610,71 @@ class AllVideoIDs(Resource):
 
 api.add_resource(AllVideoIDs, '/videoid')
 
+class VideoById(Resource):
+    def get(self,id):
+        
+        video = VideoID.query.filter(VideoID.id == id).first()
+
+        if video:
+            response_body = video.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    def delete(self, id ):
+        video = VideoID.query.filter(VideoID.id == id).first()
+
+        if video:
+            db.session.delete(video)
+            db.session.commit()
+            response_body = {}
+            return make_response(response_body, 204)
+        else:
+            response_body = {
+                "error": "video id not found"
+            }
+            return make_response(response_body,404)
+    def patch(self, id):
+        
+        video = VideoID.query.filter(VideoID.id == id).first()
+
+        if video:
+            try:
+                # Get the data from the PATCH request
+                data = request.json
+
+                # Update user attributes if present in the request
+                if 'videoId' in data:
+                    video.videoId = data['videoId']
+                else:
+                    response_body = {
+                        "error": "there is no videoId in your request"
+                    }
+                # Commit changes to the database
+                db.session.commit()
+
+                # Return the updated user
+                response_body = video.to_dict(rules=())
+                return make_response(response_body, 200)
+
+            except ValueError:
+                response_body = {
+                    "error": "Invalid data in the request"
+                }
+                return make_response(response_body, 400)
+        else:
+            response_body = {
+                "error": "Video Id was not found"
+            }
+            return make_response(response_body, 404)
+ 
+    
+
+api.add_resource(VideoById,'/videoid/<int:id>')
+
 
 
 
