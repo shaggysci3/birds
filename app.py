@@ -608,7 +608,7 @@ class AllVideoIDs(Resource):
                 }
             return make_response(rb, 400)
 
-api.add_resource(AllVideoIDs, '/videoId')
+api.add_resource(AllVideoIDs, '/videoid')
 
 
 
