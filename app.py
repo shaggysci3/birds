@@ -237,7 +237,7 @@ class ShowById(Resource):
                     show.img = data['img']
                 if 'name' in data:
                     show.name = data['name']
-                if 'password' in data:
+                if ' ' in data:
                     show.date = data['date']
                 if 'username' in data:
                     show.time = data['time']
