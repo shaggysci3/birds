@@ -165,3 +165,17 @@ class About(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<About {self.name} | {self.id}>'
     
+class VideoID(db.Model, SerializerMixin):
+    __tablename__ = 'videoId'
+
+    id = db.Column(db.Integer, primary_key=True)
+    videoId=db.Column(db.String)
+
+    # Relationship mapping the workouts to related users
+    
+     # Setialization rules for users
+    
+
+    def __repr__(self):
+        return f'<VideoID {self.name} | {self.id}>'
+    

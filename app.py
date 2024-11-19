@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About
+from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About,VideoID
 
 from config import app,db
 
@@ -536,10 +536,79 @@ class AboutById(Resource):
                 "error": "User not found"
             }
             return make_response(response_body,404)
-    
+    def patch(self, id):
+        about = About.query.filter(About.id == id).first()
+
+        if about:
+            try:
+                # Get the data from the PATCH request
+                data = request.json
+
+                # Update user attributes if present in the request
+                if 'about' in data:
+                    about.about = data['about']
+
+                # Commit changes to the database
+                db.session.commit()
+
+                # Return the updated user
+                response_body = about.to_dict(rules=())
+                return make_response(response_body, 200)
+
+            except ValueError:
+                response_body = {
+                    "error": "Invalid data in the request"
+                }
+                return make_response(response_body, 400)
+        else:
+            response_body = {
+                "error": "About info not found"
+            }
+            return make_response(response_body, 404)
+ 
     
 
 api.add_resource(AboutById,'/about/<int:id>')
+
+class AllVideoIDs(Resource):
+
+    def get(self):
+        videoID = VideoID.query.all()
+
+        response_body = [videoid.to_dict(rules=()) for videoid in videoID]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            videoCode = request.json.get('videoId')
+            
+            
+            
+
+            if not all([videoCode]):
+                raise ValueError("Missing required fields")
+
+            new_v = VideoID(
+                
+                videoId = videoCode
+                
+            )
+            db.session.add(new_v)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_v.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(AllVideoIDs, '/videoId')
 
 
 
