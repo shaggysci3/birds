@@ -6,7 +6,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings
+from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About
 
 from config import app,db
 
@@ -468,6 +468,79 @@ class AllRatings(Resource):
             return make_response(rb, 400)
 
 api.add_resource(AllRatings, '/ratings')
+
+class AllAbout(Resource):
+
+    def get(self):
+        about = About.query.all()
+
+        response_body = [about.to_dict(rules=()) for about in about]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            about = request.json.get('about')
+            
+            
+            
+
+            if not all([about]):
+                raise ValueError("Missing required fields")
+
+            new_a = About(
+                
+                about = about
+                
+            )
+            db.session.add(new_a)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_a.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(AllAbout, '/about')
+
+class AboutById(Resource):
+    def get(self,id):
+        
+        about = About.query.filter(About.id == id).first()
+
+        if about:
+            response_body = about.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    def delete(self, id ):
+        about = Workouts.query.filter(Workouts.id == id).first()
+
+        if about:
+            db.session.delete(about)
+            db.session.commit()
+            response_body = {}
+            return make_response(response_body, 204)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body,404)
+    
+    
+
+api.add_resource(AboutById,'/about/<int:id>')
+
 
 
 
