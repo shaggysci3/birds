@@ -1,5 +1,6 @@
 import os
 from flask import Flask, jsonify, make_response
+from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_cors import CORS
@@ -8,7 +9,7 @@ from flask import Flask, make_response, jsonify, request
 
 from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About,VideoID
 
-from config import app,db
+from config import app,db,mail
 
 
 # app = Flask(__name__)
@@ -38,6 +39,31 @@ class Login(Resource):
   
 api.add_resource(Login,'/login')
 
+# sending an email with flask test 1
+class SendEmail(Resource):
+    def post(self):
+        try:
+            # Parse request data
+            data = request.get_json()
+            recipient = data.get('recipient')  # Email address of the recipient
+            subject = data.get('subject', 'No Subject')  # Default subject
+            message_body = data.get('message', 'No message content')  # Default message
+
+            if not recipient:
+                return {"error": "Recipient email is required"}, 400
+
+            # Create email message
+            msg = Message(
+                subject=subject,
+                recipients=[recipient],  # List of recipients
+                body=message_body
+            )
+            mail.send(msg)  # Send the email
+
+            return {"message": "Email sent successfully"}, 200
+        except Exception as e:
+            return {"error": str(e)}, 500
+api.add_resource(SendEmail, '/send-email')
 
 class AllUsers(Resource):
     
