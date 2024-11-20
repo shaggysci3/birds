@@ -28,3 +28,4 @@ zipp==3.19.2; python_version >= '3.8'
 websockets==12.0
 Flask_SocketIO==5.3.6
 flask_bcrypt
+flask_mail
