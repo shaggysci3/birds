@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask import request
 from flask import Flask, make_response, jsonify, request
 
-from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About,VideoID
+from models import Bird,Products,Workouts,User,Show,user_workouts,Ratings,About,VideoID,Songs,FeaturedAlbum
 
 from config import app,db,mail
 
@@ -40,30 +40,30 @@ class Login(Resource):
 api.add_resource(Login,'/login')
 
 # sending an email with flask test 1
-class SendEmail(Resource):
-    def post(self):
-        try:
-            # Parse request data
-            data = request.get_json()
-            recipient = data.get('recipient')  # Email address of the recipient
-            subject = data.get('subject', 'No Subject')  # Default subject
-            message_body = data.get('message', 'No message content')  # Default message
+# class SendEmail(Resource):
+#     def post(self):
+#         try:
+#             # Parse request data
+#             data = request.get_json()
+#             recipient = data.get('recipient')  # Email address of the recipient
+#             subject = data.get('subject', 'No Subject')  # Default subject
+#             message_body = data.get('message', 'No message content')  # Default message
 
-            if not recipient:
-                return {"error": "Recipient email is required"}, 400
+#             if not recipient:
+#                 return {"error": "Recipient email is required"}, 400
 
-            # Create email message
-            msg = Message(
-                subject=subject,
-                recipients=[recipient],  # List of recipients
-                body=message_body
-            )
-            mail.send(msg)  # Send the email
+#             # Create email message
+#             msg = Message(
+#                 subject=subject,
+#                 recipients=[recipient],  # List of recipients
+#                 body=message_body
+#             )
+#             mail.send(msg)  # Send the email
 
-            return {"message": "Email sent successfully"}, 200
-        except Exception as e:
-            return {"error": str(e)}, 500
-api.add_resource(SendEmail, '/send-email')
+#             return {"message": "Email sent successfully"}, 200
+#         except Exception as e:
+#             return {"error": str(e)}, 500
+# api.add_resource(SendEmail, '/send-email')
 
 class AllUsers(Resource):
     
@@ -289,6 +289,80 @@ class ShowById(Resource):
             return make_response(response_body, 404)
 
 api.add_resource(ShowById,'/shows/<int:id>')
+
+class Song(Resource):
+
+    def get(self):
+        response_body = [song.to_dict() for song in Songs.query.all()]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            
+            song = request.json.get('song')
+            album_id = request.json.get('album_id')
+            
+
+            if not all([song,album_id]):
+                raise ValueError("Missing required fields")
+
+            new_s = Songs(
+                
+                song =song,
+                album_id=album_id
+            )
+            db.session.add(new_s)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_s.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(Song, '/song')
+
+class Album(Resource):
+
+    def get(self):
+        response_body = [album.to_dict() for album in FeaturedAlbum.query.all()]
+        return make_response(response_body,200)
+    def post(self):
+        try:
+            
+            # Ensure required fields are present in the request
+            # id = request.json.get('id')
+            
+            img = request.json.get('img')
+            
+            
+
+            if not all([img]):
+                raise ValueError("Missing required fields")
+
+            new_a = FeaturedAlbum(
+                img=img
+            )
+            db.session.add(new_a)
+            db.session.commit()
+
+            # Assuming to_dict() method is defined in your Mission model
+            rb = new_a.to_dict(rules = ())
+            return make_response(rb, 201)
+
+        except ValueError:
+            rb = {
+                "errors": ["validation errors"]
+                }
+            return make_response(rb, 400)
+
+api.add_resource(Album, '/album')
 
 
 class AllWorkouts(Resource):

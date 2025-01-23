@@ -11,12 +11,12 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Email settings
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # Email address
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # Email password or app password
-app.config['MAIL_DEFAULT_SENDER'] = ('Your App Name', 'matthewsandor01@gmail.com')
+# app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+# app.config['MAIL_USE_TLS'] = True
+# app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')  # Email address
+# app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')  # Email password or app password
+# app.config['MAIL_DEFAULT_SENDER'] = ('Your App Name', 'matthewsandor01@gmail.com')
 
 app.json.compact = False
 metadata = MetaData(naming_convention={

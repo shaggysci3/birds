@@ -179,3 +179,36 @@ class VideoID(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<VideoID {self.name} | {self.id}>'
     
+
+class FeaturedAlbum(db.Model, SerializerMixin):
+    __tablename__ = 'featuredAlbum'
+
+    id = db.Column(db.Integer, primary_key=True)
+    img = db.Column(db.String)
+    # relationships
+    songs = db.relationship('Songs', back_populates = 'featuredAlbum', cascade= 'all, delete-orphan')
+
+     # Serialization rules
+    serialize_rules = ('-songs.featuredAlbum',)
+
+    def __repr__(self):
+        return f'<FeaturedAlbum {self.name} | {self.id}>'
+    
+
+class Songs(db.Model, SerializerMixin):
+    __tablename__ = 'songs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    song = db.Column(db.String)
+    album_id = db.Column(db.Integer, db.ForeignKey('featuredAlbum.id'), nullable=False)
+    # relationships
+    featuredAlbum = db.relationship('FeaturedAlbum', back_populates = 'songs')
+
+      # Serialization rules
+    serialize_rules = ('-featuredAlbum.songs',)
+
+
+    def __repr__(self):
+        return f'<Songs {self.name} | {self.id}>'
+    
+    
