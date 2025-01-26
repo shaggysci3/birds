@@ -328,6 +328,69 @@ class Song(Resource):
 
 api.add_resource(Song, '/song')
 
+class SongById(Resource):
+    def get(self,id):
+
+        song = Songs.query.filter(Songs.id == id).first()
+
+        if song:
+            response_body = song.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "Song not found"
+            }
+            return make_response(response_body,404)
+    
+    # def delete(self, id ):
+    #     show = Show.query.filter(Show.id == id).first()
+
+    #     if show:
+    #         db.session.delete(show)
+    #         db.session.commit()
+    #         response_body = {}
+    #         return make_response(response_body, 204)
+    #     else:
+    #         response_body = {
+    #             "error": "User not found"
+    #         }
+    #         return make_response(response_body,404)
+    
+    def patch(self, id):
+        song = Songs.query.filter(Songs.id == id).first()
+
+        if song:
+            try:
+                # Get the data from the PATCH request
+                data = request.json
+
+                # Update user attributes if present in the request
+                if 'song' in data:
+                    song.song = data['song']
+                if 'album_id' in data:
+                    song.album_id = data['album_id']
+                
+
+                # Commit changes to the database
+                db.session.commit()
+
+                # Return the updated user
+                response_body = song.to_dict(rules=())
+                return make_response(response_body, 200)
+
+            except ValueError:
+                response_body = {
+                    "error": "Invalid data in the request"
+                }
+                return make_response(response_body, 400)
+        else:
+            response_body = {
+                "error": "User not found"
+            }
+            return make_response(response_body, 404)
+
+api.add_resource(SongById,'/song/<int:id>')
+
 class Album(Resource):
 
     def get(self):
@@ -363,6 +426,69 @@ class Album(Resource):
             return make_response(rb, 400)
 
 api.add_resource(Album, '/album')
+
+class AlbumById(Resource):
+    def get(self,id):
+
+        albums = FeaturedAlbum.query.filter(FeaturedAlbum.id == id).first()
+
+        if albums:
+            response_body = albums.to_dict(rules = ())
+            return make_response(response_body,200)
+        else:
+            response_body = {
+                "error": "Album not found"
+            }
+            return make_response(response_body,404)
+    
+    # def delete(self, id ):
+    #     show = Show.query.filter(Show.id == id).first()
+
+    #     if show:
+    #         db.session.delete(show)
+    #         db.session.commit()
+    #         response_body = {}
+    #         return make_response(response_body, 204)
+    #     else:
+    #         response_body = {
+    #             "error": "User not found"
+    #         }
+    #         return make_response(response_body,404)
+    
+    # def patch(self, id):
+    #     song = Songs.query.filter(Songs.id == id).first()
+
+    #     if song:
+    #         try:
+    #             # Get the data from the PATCH request
+    #             data = request.json
+
+    #             # Update user attributes if present in the request
+    #             if 'song' in data:
+    #                 song.song = data['song']
+    #             if 'album_id' in data:
+    #                 song.album_id = data['album_id']
+                
+
+    #             # Commit changes to the database
+    #             db.session.commit()
+
+    #             # Return the updated user
+    #             response_body = song.to_dict(rules=())
+    #             return make_response(response_body, 200)
+
+    #         except ValueError:
+    #             response_body = {
+    #                 "error": "Invalid data in the request"
+    #             }
+    #             return make_response(response_body, 400)
+    #     else:
+    #         response_body = {
+    #             "error": "User not found"
+    #         }
+    #         return make_response(response_body, 404)
+
+api.add_resource(AlbumById,'/album/<int:id>')
 
 
 class AllWorkouts(Resource):
